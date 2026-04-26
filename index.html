@@ -768,62 +768,62 @@ function rFinance(m){
 
         if(summaryRows.length){
           const smH=el('div',{style:'display:grid;grid-template-columns:1fr 1fr 80px 80px 1fr;gap:0;background:#1a1a1a;padding:6px 10px;font-size:10px;color:#555;text-transform:uppercase;border-radius:7px 7px 0 0;border:1px solid #2a2a2a;border-bottom:none'});
-          ['Место','Ивент','Ожидается','Получено','Статус'].forEach(h=>smH.appendChild(el('div',{textContent:h})));
+          ['Место','Ивент','Ожидается','Получено','К инкассации'].forEach(h=>smH.appendChild(el('div',{textContent:h})));
           colWrap.appendChild(smH);
-          const smB=el('div',{style:'border:1px solid #2a2a2a;border-radius:0 0 7px 7px;overflow:hidden'});
+          const smB=el('div',{style:'border:1px solid #2a2a2a;border-radius:0 0 7px 7px;overflow:hidden;margin-bottom:16px'});
+          let sumPending=0,sumDebt=0;
+          summaryRows.forEach(row=>{
+            if(row.diff>0&&!row.hadCollection) sumPending+=row.diff;
+            else if(row.diff>0&&row.hadCollection) sumDebt+=row.diff;
+          });
           summaryRows.forEach((row,idx)=>{
             const drow=el('div',{style:'display:grid;grid-template-columns:1fr 1fr 80px 80px 1fr;gap:0;padding:7px 10px;border-top:'+(idx?'1px solid #1a1a1a':'none')+';font-size:12px;align-items:center'});
             let statusHtml;
             if(row.diff<=0){
-              statusHtml='<span style="color:#4ade80;font-size:11px">✅ Закрыто</span>';
+              statusHtml='<span style="color:#4ade80;font-size:11px">Закрыто</span>';
             } else if(row.hadCollection){
-              statusHtml='<span style="color:#f87171;font-size:11px">⚠️ Долг: '+row.diff.toLocaleString('ru-RU')+' RSD</span>';
+              statusHtml='<span style="color:#f87171;font-size:11px">Долг: '+row.diff.toLocaleString('ru-RU')+' RSD</span>';
             } else {
-              statusHtml='<span style="color:#facc15;font-size:11px">📋 К инкассации: '+row.diff.toLocaleString('ru-RU')+' RSD</span>';
+              statusHtml='<span style="color:#facc15;font-size:11px">'+row.diff.toLocaleString('ru-RU')+' RSD</span>';
             }
             drow.innerHTML='<div style="color:#888">'+esc(row.bn)+'</div><div style="color:#ccc">'+esc(row.ev.calNm)+'</div>'
               +'<div style="color:#666">'+row.expected.toLocaleString('ru-RU')+'</div>'
               +'<div style="color:#ccc">'+row.collected.toLocaleString('ru-RU')+'</div>'+statusHtml;
             smB.appendChild(drow);
           });
-          colWrap.appendChild(smB);
-          let sumPending=0,sumDebt=0;
-          summaryRows.forEach(row=>{
-            if(row.diff>0&&!row.hadCollection) sumPending+=row.diff;
-            else if(row.diff>0&&row.hadCollection) sumDebt+=row.diff;
-          });
-          if(sumPending>0||sumDebt>0){
-            const totalsRow=el('div',{style:'text-align:right;font-size:12px;padding:4px 0;margin-top:8px;margin-bottom:16px;display:flex;gap:16px;justify-content:flex-end'});
-            if(sumPending>0) totalsRow.innerHTML+='<span style="color:#facc15">📋 К инкассации: <b>'+sumPending.toLocaleString('ru-RU')+' RSD</b></span>';
-            if(sumDebt>0) totalsRow.innerHTML+='<span style="color:#f87171">⚠️ Долг: <b>'+sumDebt.toLocaleString('ru-RU')+' RSD</b></span>';
-            colWrap.appendChild(totalsRow);
+          if(sumPending>0){
+            const totalsRow=el('div',{style:'display:grid;grid-template-columns:1fr 1fr 80px 80px 1fr;gap:0;padding:7px 10px;border-top:1px solid #1a1a1a;font-size:12px;align-items:center;background:#161616'});
+            totalsRow.innerHTML='<div></div><div></div><div></div><div></div><div><span style="color:#facc15;font-weight:600">'+sumPending.toLocaleString('ru-RU')+' RSD</span></div>';
+            smB.appendChild(totalsRow);
           }
+          colWrap.appendChild(smB);
         }
 
         // ── Add new collection form ──────────────────────────
         const addColSec=el('div',{style:'background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:16px'});
         const addColTitle=el('div',{style:'font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px',textContent:'+ Добавить инкассацию'});
         addColSec.appendChild(addColTitle);
-        const fldStyle='font-size:12px;padding:6px 8px';
-        const addRow1=el('div',{style:'display:grid;grid-template-columns:1fr 1fr 120px;gap:6px;margin-bottom:6px'});
-        const addRow2=el('div',{style:'display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:center'});
+        const fldStyle='font-size:12px;padding:6px 8px;background:#111;border:1px solid #2a2a2a;border-radius:6px;color:#ccc;font-family:inherit;outline:none';
+        const addForm=el('div',{style:'display:flex;flex-direction:column;gap:8px'});
+        const addRow1=el('div',{style:'display:flex;gap:6px'});
+        const addRow2=el('div',{style:'display:flex;gap:6px;align-items:center'});
         // Bar select
-        const barSel=el('select',{className:'fisml',style:fldStyle});
+        const barSel=el('select',{style:'flex:1;'+fldStyle});
         [['','— Бар —'],['fomin','Fomin Bar'],['skart','Skart'],['zappa','Zappa Bar'],['crnivan','Crni Ovan']].forEach(([v,l])=>{
           const o=el('option',{value:v,textContent:l});barSel.appendChild(o);
         });
         // Event select
-        const evSel=el('select',{className:'fisml',style:fldStyle});
+        const evSel=el('select',{style:'flex:2;'+fldStyle});
         const evOptDef=el('option',{value:'',textContent:'— Ивент —'});evSel.appendChild(evOptDef);
         upcoming.forEach(ev=>{const o=el('option',{value:ev.id,textContent:ev.calNm});evSel.appendChild(o);});
         // Date
-        const dateNew=el('input',{className:'fisml',type:'date',value:new Date().toISOString().split('T')[0],style:fldStyle});
+        const dateNew=el('input',{type:'date',value:new Date().toISOString().split('T')[0],style:'width:120px;'+fldStyle});
         // Amount
-        const amtNew=el('input',{className:'fisml',type:'number',placeholder:'Сумма RSD',style:fldStyle});
+        const amtNew=el('input',{type:'number',placeholder:'Сумма RSD',style:'flex:1;'+fldStyle});
         // Who
-        const whoNew=el('input',{className:'fisml',type:'text',placeholder:'Кто',style:fldStyle});
+        const whoNew=el('input',{type:'text',placeholder:'Кто',style:'flex:1;'+fldStyle});
         // Save btn
-        const addBtn=el('button',{textContent:'+ Добавить',style:'background:#E8321E;color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap'});
+        const addBtn=el('button',{textContent:'+ Добавить',style:'background:#E8321E;color:#fff;border:none;border-radius:6px;padding:6px 16px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap'});
         addBtn.onclick=async()=>{
           const bk=barSel.value,evId=evSel.value,amt=parseInt(amtNew.value)||0,who=whoNew.value.trim(),dt=dateNew.value;
           if(!bk||!evId||!amt){addBtn.style.opacity='.5';setTimeout(()=>addBtn.style.opacity='',1500);return;}
@@ -841,7 +841,8 @@ function rFinance(m){
         };
         addRow1.appendChild(barSel);addRow1.appendChild(evSel);addRow1.appendChild(dateNew);
         addRow2.appendChild(amtNew);addRow2.appendChild(whoNew);addRow2.appendChild(addBtn);
-        addColSec.appendChild(addRow1);addColSec.appendChild(addRow2);
+        addForm.appendChild(addRow1);addForm.appendChild(addRow2);
+        addColSec.appendChild(addForm);
         colWrap.appendChild(addColSec);
 
         // ── History ──────────────────────────────────────────
