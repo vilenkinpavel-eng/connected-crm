@@ -147,6 +147,7 @@ lbtn.onclick=async()=>{
   else{lerr.textContent='Неверный пароль';lpwd.value='';lpwd.focus()}
 }
 lpwd.addEventListener('keydown',e=>{if(e.key==='Enter')lbtn.click()})
+function init(){loadFB()}
 
 // ── FIREBASE ──────────────────────────────────────────
 const firebaseConfig={apiKey:"AIzaSyCRn-Kqn_cawQRG9iwVHZKTWrFfdj2pbPM",authDomain:"connected-crm.firebaseapp.com",projectId:"connected-crm",storageBucket:"connected-os.firebasestorage.app",messagingSenderId:"1026747977280",appId:"1:1026747977280:web:0a891150b5062a9c4ad9a5"};
@@ -440,6 +441,7 @@ else if(i===7){
 }
 else if(i===8){rQuotaDetail(c,ev)}
 }
+if(sessionStorage.getItem('crm-auth')==='1'){loginEl.style.display='none';appEl.style.display='block';init();}
 </script>
 </body>
 </html>
