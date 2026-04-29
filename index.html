@@ -856,6 +856,25 @@ else if(i===7){
 }
 else if(i===8){rQuotaDetail(c,ev)}
 }
+function rQuotaDetail(c,ev){
+  const evId=ev.id;
+  loadQuotas().then(allQ=>{
+    const q=allQ[evId]||{};
+    const BAR_NAMES={zappa:'Zappa Bar',fomin:'Fomin Bar',skart:'Skart',crnivan:'Crni Ovan'};
+    c.innerHTML='';
+    Object.entries(BAR_NAMES).forEach(([bk,bn])=>{
+      const bq=q[bk]||{};
+      const s=sec(bn);
+      if(!Object.keys(bq).length){s.appendChild(el('div',{className:'fv emp',textContent:'Нет квот'}));c.appendChild(s);return;}
+      Object.entries(bq).forEach(([tp,qv])=>{
+        const row=el('div',{style:'display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #1a1a1a'});
+        row.innerHTML='<span style="color:#ccc">'+esc(tp)+'</span><span style="color:#888">'+((qv.qty||0))+' шт. × '+(qv.price||0)+' RSD</span>';
+        s.appendChild(row);
+      });
+      c.appendChild(s);
+    });
+  });
+}
 function init(){render();loadFB()}
 if(sessionStorage.getItem('crm-auth')==='1'){loginEl.style.display='none';appEl.style.display='block';init();}
 </script>
