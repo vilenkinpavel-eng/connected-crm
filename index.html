@@ -371,6 +371,7 @@ else if(i===2){
   hSec.appendChild(ff('Press Kit','aPK','https://drive.google.com/...'));
   hSec.appendChild(ff('Rider','aTech','https://drive.google.com/...'));
   c.appendChild(hSec);
+}
 else if(i===3){const cities=d.cities||[];if(!cities.length){c.innerHTML='<p class="hint">Выберите города на вкладке «Основное»</p>';return}cities.forEach(city=>{const cd=d.cityData[city];const s=sec(city+(cd?.venue&&cd.venue!=='—'?' — '+cd.venue:''));
   // Address — auto-fill from VENUE_ADDR, editable
   const addrWrap=el('div');addrWrap.innerHTML='<div class="fl">Адрес</div>';
